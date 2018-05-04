@@ -39,7 +39,8 @@
   "devDependencies": {
     "ava": "*",
     "semistandard": "*",
-    "jsonfile": "*"
+    "jsonfile": "*",
+    "nyc": "*"
   },
   "license": "Apache-2.0",
   "bugs": {
