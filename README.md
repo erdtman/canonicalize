@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/erdtman/canonicalize/badge.svg?branch=master)](https://coveralls.io/github/erdtman/canonicalize?branch=master)
 # canonicalize
 JSON canonicalize function. Creates crypto safe predictable canocalization of
-JSON as defined by [draft-rundgren-json-canonicalization-scheme](https://cyberphone.github.io/doc/security/draft-rundgren-json-canonicalization-scheme.html)
+JSON as defined by [draft-rundgren-json-canonicalization-scheme](https://tools.ietf.org/html/draft-rundgren-json-canonicalization-scheme)
 ## Usage
 ```js
 JSON.canonicalize = require('canonicalize');
