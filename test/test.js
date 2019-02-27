@@ -35,7 +35,7 @@ test('values', t => {
   t.is(actual, expected);
 });
 
-test('values', t => {
+test('weird', t => {
   const input = jsonfile.readFileSync('test/testdata/input/weird.json');
   const expected = fs.readFileSync('test/testdata/output/weird.json', 'utf8').trim();
   const actual = JSON.canonicalize(input);
