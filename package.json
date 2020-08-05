@@ -9,7 +9,7 @@
   },
   "scripts": {
     "pretest": "semistandard --fix",
-    "test": "ava test",
+    "test": "ava",
     "coverage": "nyc npm test",
     "coveragehtml": "nyc report -r html",
     "precoveragehtml": "npm run coverage",
