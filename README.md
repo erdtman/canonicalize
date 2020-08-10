@@ -11,10 +11,10 @@ const  json = {
 	"from_account": "543 232 625-3",
 	"to_account": "321 567 636-4",
 	"amount": 500,
-	"curency": "USD"
+	"currency": "USD"
 }
 console.log(JSON.canonicalize(json));
-// output: {"amount":500,"curency":"USD","from_account":"543 232 625-3","to_account":"321 567 636-4"}
+// output: {"amount":500,"currency":"USD","from_account":"543 232 625-3","to_account":"321 567 636-4"}
 ```
 ### Crazy Example
 ```js
