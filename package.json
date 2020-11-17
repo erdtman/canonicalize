@@ -1,6 +1,6 @@
 {
   "name": "canonicalize",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "JSON canonicalize function ",
   "main": "lib/canonicalize.js",
   "directories": {
