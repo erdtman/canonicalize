@@ -67,3 +67,45 @@ test('object with more than one property', t => {
   const actual = JSON.canonicalize(input);
   t.is(actual, expected);
 });
+
+test('undefined', t => {
+  const input = undefined;
+  const expected = undefined;
+  const actual = JSON.canonicalize(input);
+  t.is(actual, expected);
+});
+
+test('null', t => {
+  const input = null;
+  const expected = 'null';
+  const actual = JSON.canonicalize(input);
+  t.is(actual, expected);
+});
+
+test('symbol', t => {
+  const input = Symbol('hello world');
+  const expected = undefined;
+  const actual = JSON.canonicalize(input);
+  t.is(actual, expected);
+});
+
+test('object with symbol value', t => {
+  const input = { test: Symbol('hello world') };
+  const expected = '{}';
+  const actual = JSON.canonicalize(input);
+  t.is(actual, expected);
+});
+
+test('object with number key', t => {
+  const input = { 42: 'foo' };
+  const expected = '{"42":"foo"}';
+  const actual = JSON.canonicalize(input);
+  t.is(actual, expected);
+});
+
+test('object with symbol key', t => {
+  const input = { [Symbol('hello world')]: 'foo' };
+  const expected = '{}';
+  const actual = JSON.canonicalize(input);
+  t.is(actual, expected);
+});
