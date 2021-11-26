@@ -33,6 +33,13 @@ test('null and undefined values in array', t => {
   t.is(actual, expected);
 });
 
+test('object in array', t => {
+  const input = [{ b: 123, a: 'string' }];
+  const expected = '[{"a":"string","b":123}]';
+  const actual = JSON.canonicalize(input);
+  t.is(actual, expected);
+});
+
 test('empty object', t => {
   const input = {};
   const expected = '{}';
@@ -106,6 +113,22 @@ test('object with number key', t => {
 test('object with symbol key', t => {
   const input = { [Symbol('hello world')]: 'foo' };
   const expected = '{}';
+  const actual = JSON.canonicalize(input);
+  t.is(actual, expected);
+});
+
+test('object with toJSON', t => {
+  const input = {
+    a: 123,
+    b: 456,
+    toJSON: function () {
+      return {
+        b: this.b,
+        a: this.a
+      };
+    }
+  };
+  const expected = '{"a":123,"b":456}';
   const actual = JSON.canonicalize(input);
   t.is(actual, expected);
 });
