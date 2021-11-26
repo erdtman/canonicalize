@@ -5,17 +5,17 @@
 JSON.canonicalize = require('../');
 
 const json = {
-  '1': {'f': {'f': 'hi', 'F': 5}, '\n': 56.0},
-  '10': {},
+  1: { f: { f: 'hi', F: 5 }, '\n': 56.0 },
+  10: {},
   '': 'empty',
-  'a': {},
-  '111': [
+  a: {},
+  111: [
     {
-      'e': 'yes',
-      'E': 'no'
+      e: 'yes',
+      E: 'no'
     }
   ],
-  'A': {}
+  A: {}
 };
 
 console.log(JSON.canonicalize(json));
