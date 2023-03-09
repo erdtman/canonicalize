@@ -33,6 +33,72 @@ test('null and undefined values in array', t => {
   t.is(actual, expected);
 });
 
+test('NaN in array', t => {
+  try {
+    const input = [NaN];
+    JSON.canonicalize(input);
+    t.fail();
+  } catch (error) {
+    t.is(error.message, 'NaN is not allowed');
+    t.pass();
+  }
+});
+
+test('NaN in object', t => {
+  try {
+    const input = { key: NaN };
+    JSON.canonicalize(input);
+    t.fail();
+  } catch (error) {
+    t.is(error.message, 'NaN is not allowed');
+    t.pass();
+  }
+});
+
+test('NaN single value', t => {
+  try {
+    const input = NaN;
+    JSON.canonicalize(input);
+    t.fail();
+  } catch (error) {
+    t.is(error.message, 'NaN is not allowed');
+    t.pass();
+  }
+});
+
+test('Infinity in array', t => {
+  try {
+    const input = [Infinity];
+    JSON.canonicalize(input);
+    t.fail();
+  } catch (error) {
+    t.is(error.message, 'Infinity is not allowed');
+    t.pass();
+  }
+});
+
+test('Infinity in object', t => {
+  try {
+    const input = { key: Infinity };
+    JSON.canonicalize(input);
+    t.fail();
+  } catch (error) {
+    t.is(error.message, 'Infinity is not allowed');
+    t.pass();
+  }
+});
+
+test('Infinity single value', t => {
+  try {
+    const input = -Infinity;
+    JSON.canonicalize(input);
+    t.fail();
+  } catch (error) {
+    t.is(error.message, 'Infinity is not allowed');
+    t.pass();
+  }
+});
+
 test('object in array', t => {
   const input = [{ b: 123, a: 'string' }];
   const expected = '[{"a":"string","b":123}]';
