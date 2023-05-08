@@ -198,3 +198,14 @@ test('object with toJSON', t => {
   const actual = JSON.canonicalize(input);
   t.is(actual, expected);
 });
+
+test('"lone surrogate" invalid Unicode data', t => {
+  const input = { test: '\u{DEAD}' };
+  try {
+    console.log(JSON.canonicalize(input));
+    t.fail();
+  } catch (error) {
+    t.is(error.message, 'Strings must be valid Unicode and not contain any surrogate pairs');
+    t.pass();
+  }
+});
