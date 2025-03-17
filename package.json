@@ -4,6 +4,7 @@
   "description": "JSON canonicalize function ",
   "main": "lib/canonicalize.js",
   "types": "lib/canonicalize.d.ts",
+  "bin": "bin/canonicalize.js",
   "directories": {
     "example": "examples",
     "lib": "lib"

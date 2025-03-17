@@ -30,6 +30,23 @@ const  json = {
 console.log(canonicalize(json));
 // output: {"":"empty","1":{"\n":56,"f":{"F":5,"f":"hi"}},"10":{},"111":[{"E":"no","e":"yes"}],"A":{},"a":{}}
 ```
+### Via CLI
+The function can be executed directly using npx without explicit installation. This allows JSON files and arbitrary input to be canonicalized with standard input/output:
+```bash
+# Input from file
+npx canonicalize < input.json > output.json
+
+# Input from string
+echo '{
+	"from_account": "543 232 625-3",
+	"to_account": "321 567 636-4",
+	"amount": 500,
+	"currency": "USD"
+}' | npx canonicalize > simple-data.json
+
+# Input from web API
+curl --silent https://pokeapi.co/api/v2/pokemon/pikachu | npx canonicalize > pikachu.json
+```
 ## Install
 ```
 npm install canonicalize --save
