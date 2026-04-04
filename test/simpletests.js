@@ -3,19 +3,31 @@ import assert from 'node:assert/strict';
 import canonicalize from '../lib/canonicalize.js';
 
 test('empty array', () => {
-  assert.equal(canonicalize([]), '[]');
+  const input = [];
+  const expected = '[]';
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('one element array', () => {
-  assert.equal(canonicalize([123]), '[123]');
+  const input = [123];
+  const expected = '[123]';
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('multi element array', () => {
-  assert.equal(canonicalize([123, 456, 'hello']), '[123,456,"hello"]');
+  const input = [123, 456, 'hello'];
+  const expected = '[123,456,"hello"]';
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('null and undefined values in array', () => {
-  assert.equal(canonicalize([null, undefined, 'hello']), '[null,null,"hello"]');
+  const input = [null, undefined, 'hello'];
+  const expected = '[null,null,"hello"]';
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('NaN in array', () => {
@@ -43,51 +55,87 @@ test('Infinity single value', () => {
 });
 
 test('object in array', () => {
-  assert.equal(canonicalize([{ b: 123, a: 'string' }]), '[{"a":"string","b":123}]');
+  const input = [{ b: 123, a: 'string' }];
+  const expected = '[{"a":"string","b":123}]';
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('empty object', () => {
-  assert.equal(canonicalize({}), '{}');
+  const input = {};
+  const expected = '{}';
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('object with undefined value', () => {
-  assert.equal(canonicalize({ test: undefined }), '{}');
+  const input = { test: undefined };
+  const expected = '{}';
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('object with null value', () => {
-  assert.equal(canonicalize({ test: null }), '{"test":null}');
+  const input = { test: null };
+  const expected = '{"test":null}';
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('object with one property', () => {
-  assert.equal(canonicalize({ hello: 'world' }), '{"hello":"world"}');
+  const input = { hello: 'world' };
+  const expected = '{"hello":"world"}';
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('object with more than one property', () => {
-  assert.equal(canonicalize({ hello: 'world', number: 123 }), '{"hello":"world","number":123}');
+  const input = { hello: 'world', number: 123 };
+  const expected = '{"hello":"world","number":123}';
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('undefined', () => {
-  assert.equal(canonicalize(undefined), undefined);
+  const input = undefined;
+  const expected = undefined;
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('null', () => {
-  assert.equal(canonicalize(null), 'null');
+  const input = null;
+  const expected = 'null';
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('symbol', () => {
-  assert.equal(canonicalize(Symbol('hello world')), undefined);
+  const input = Symbol('hello world');
+  const expected = undefined;
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('object with symbol value', () => {
-  assert.equal(canonicalize({ test: Symbol('hello world') }), '{}');
+  const input = { test: Symbol('hello world') };
+  const expected = '{}';
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('object with number key', () => {
-  assert.equal(canonicalize({ 42: 'foo' }), '{"42":"foo"}');
+  const input = { 42: 'foo' };
+  const expected = '{"42":"foo"}';
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('object with symbol key', () => {
-  assert.equal(canonicalize({ [Symbol('hello world')]: 'foo' }), '{}');
+  const input = { [Symbol('hello world')]: 'foo' };
+  const expected = '{}';
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('object with toJSON', () => {
@@ -98,5 +146,7 @@ test('object with toJSON', () => {
       return { b: this.b, a: this.a };
     }
   };
-  assert.equal(canonicalize(input), '{"a":123,"b":456}');
+  const expected = '{"a":123,"b":456}';
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
