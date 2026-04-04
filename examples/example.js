@@ -1,8 +1,4 @@
-/* jshint esversion: 6 */
-/* jslint node: true */
-'use strict';
-
-JSON.canonicalize = require('../');
+import canonicalize from '../lib/canonicalize.js';
 
 const json = {
   1: { f: { f: 'hi', F: 5 }, '\n': 56.0 },
@@ -18,4 +14,4 @@ const json = {
   A: {}
 };
 
-console.log(JSON.canonicalize(json));
+console.log(canonicalize(json));
