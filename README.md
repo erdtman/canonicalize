@@ -1,13 +1,15 @@
-[![Build Status](https://app.travis-ci.com/erdtman/canonicalize.svg?branch=master)](https://app.travis-ci.com/erdtman/canonicalize)
-[![Coverage Status](https://coveralls.io/repos/github/erdtman/canonicalize/badge.svg?branch=master)](https://coveralls.io/github/erdtman/canonicalize?branch=master)
+[![CI](https://github.com/erdtman/canonicalize/actions/workflows/ci.yml/badge.svg)](https://github.com/erdtman/canonicalize/actions/workflows/ci.yml)
 # canonicalize
-JSON canonicalize function. Creates crypto safe predictable canocalization of
-JSON as defined by [RFC8785](https://tools.ietf.org/html/rfc8785)
+JSON canonicalize function. Creates crypto safe predictable canonicalization of
+JSON as defined by [RFC8785](https://tools.ietf.org/html/rfc8785).
+
+TypeScript type definitions are included.
+
 ## Usage
 ### Normal Example
 ```js
-const canonicalize = require('canonicalize');
-const  json = {
+import canonicalize from 'canonicalize';
+const json = {
 	"from_account": "543 232 625-3",
 	"to_account": "321 567 636-4",
 	"amount": 500,
@@ -18,8 +20,8 @@ console.log(canonicalize(json));
 ```
 ### Crazy Example
 ```js
-const canonicalize = require('canonicalize');
-const  json = {
+import canonicalize from 'canonicalize';
+const json = {
 	"1": {"f": {"f":  "hi","F":  5} ,"\n":  56.0},
 	"10": { },
 	"":  "empty",
