@@ -50,8 +50,14 @@ echo '{
 curl --silent https://pokeapi.co/api/v2/pokemon/pikachu | npx canonicalize > pikachu.json
 ```
 ## Install
+As a library:
 ```
 npm install canonicalize --save
+```
+As a CLI tool:
+```
+npm install -g canonicalize
+canonicalize < input.json > output.json
 ```
 ## Test
 ```
