@@ -157,4 +157,38 @@ describe('toJSON', () => {
     const input = { toJSON: () => NaN };
     assert.throws(() => canonicalize(input), { message: 'NaN is not allowed' });
   });
+
+  test('toJSON returning self throws', () => {
+    const input = {};
+    input.toJSON = () => input;
+    assert.throws(() => canonicalize(input), { message: 'Circular reference detected' });
+  });
+});
+
+describe('circular references', () => {
+  test('object referencing itself throws', () => {
+    const input = {};
+    input.self = input;
+    assert.throws(() => canonicalize(input), { message: 'Circular reference detected' });
+  });
+
+  test('array referencing itself throws', () => {
+    const input = [];
+    input.push(input);
+    assert.throws(() => canonicalize(input), { message: 'Circular reference detected' });
+  });
+
+  test('nested circular reference throws', () => {
+    const a = {};
+    const b = { a };
+    a.b = b;
+    assert.throws(() => canonicalize(a), { message: 'Circular reference detected' });
+  });
+
+  test('same object referenced twice (non-circular) is allowed', () => {
+    const shared = { z: 1 };
+    const actual = canonicalize({ x: shared, y: shared });
+    const expected = '{"x":{"z":1},"y":{"z":1}}';
+    assert.equal(actual, expected);
+  });
 });
