@@ -17,25 +17,30 @@ function testdata(name) {
 
 test('arrays', () => {
   const { input, expected } = testdata('arrays');
-  assert.equal(canonicalize(input), expected);
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('french', () => {
   const { input, expected } = testdata('french');
-  assert.equal(canonicalize(input), expected);
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('structures', () => {
   const { input, expected } = testdata('structures');
-  assert.equal(canonicalize(input), expected);
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('values', () => {
   const { input, expected } = testdata('values');
-  assert.equal(canonicalize(input), expected);
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
 
 test('weird', () => {
   const { input, expected } = testdata('weird');
-  assert.equal(canonicalize(input), expected);
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
 });
