@@ -106,29 +106,35 @@ describe('primitive values', () => {
 
 describe('NaN handling', () => {
   test('NaN in array', () => {
-    assert.throws(() => canonicalize([NaN]), { message: 'NaN is not allowed' });
+    const expected = { message: 'NaN is not allowed' };
+    assert.throws(() => canonicalize([NaN]), expected);
   });
 
   test('NaN in object', () => {
-    assert.throws(() => canonicalize({ key: NaN }), { message: 'NaN is not allowed' });
+    const expected = { message: 'NaN is not allowed' };
+    assert.throws(() => canonicalize({ key: NaN }), expected);
   });
 
   test('NaN as top-level value', () => {
-    assert.throws(() => canonicalize(NaN), { message: 'NaN is not allowed' });
+    const expected = { message: 'NaN is not allowed' };
+    assert.throws(() => canonicalize(NaN), expected);
   });
 });
 
 describe('Infinity handling', () => {
   test('Infinity in array', () => {
-    assert.throws(() => canonicalize([Infinity]), { message: 'Infinity is not allowed' });
+    const expected = { message: 'Infinity is not allowed' };
+    assert.throws(() => canonicalize([Infinity]), expected);
   });
 
   test('Infinity in object', () => {
-    assert.throws(() => canonicalize({ key: Infinity }), { message: 'Infinity is not allowed' });
+    const expected = { message: 'Infinity is not allowed' };
+    assert.throws(() => canonicalize({ key: Infinity }), expected);
   });
 
   test('-Infinity as top-level value', () => {
-    assert.throws(() => canonicalize(-Infinity), { message: 'Infinity is not allowed' });
+    const expected = { message: 'Infinity is not allowed' };
+    assert.throws(() => canonicalize(-Infinity), expected);
   });
 });
 
@@ -155,13 +161,15 @@ describe('toJSON', () => {
 
   test('toJSON returning NaN throws', () => {
     const input = { toJSON: () => NaN };
-    assert.throws(() => canonicalize(input), { message: 'NaN is not allowed' });
+    const expected = { message: 'NaN is not allowed' };
+    assert.throws(() => canonicalize(input), expected);
   });
 
   test('toJSON returning self throws', () => {
     const input = {};
     input.toJSON = () => input;
-    assert.throws(() => canonicalize(input), { message: 'Circular reference detected' });
+    const expected = { message: 'Circular reference detected' };
+    assert.throws(() => canonicalize(input), expected);
   });
 });
 
@@ -169,20 +177,23 @@ describe('circular references', () => {
   test('object referencing itself throws', () => {
     const input = {};
     input.self = input;
-    assert.throws(() => canonicalize(input), { message: 'Circular reference detected' });
+    const expected = { message: 'Circular reference detected' };
+    assert.throws(() => canonicalize(input), expected);
   });
 
   test('array referencing itself throws', () => {
     const input = [];
     input.push(input);
-    assert.throws(() => canonicalize(input), { message: 'Circular reference detected' });
+    const expected = { message: 'Circular reference detected' };
+    assert.throws(() => canonicalize(input), expected);
   });
 
   test('nested circular reference throws', () => {
     const a = {};
     const b = { a };
     a.b = b;
-    assert.throws(() => canonicalize(a), { message: 'Circular reference detected' });
+    const expected = { message: 'Circular reference detected' };
+    assert.throws(() => canonicalize(a), expected);
   });
 
   test('same object referenced twice (non-circular) is allowed', () => {
