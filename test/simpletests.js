@@ -151,6 +151,12 @@ describe('Unicode handling', () => {
     assert.throws(() => canonicalize(input), expected);
   });
 
+  test('lone high surrogate before a non-low-surrogate throws', () => {
+    const input = { key: '\uD800a' };
+    const expected = { message: 'Lone surrogate is not allowed' };
+    assert.throws(() => canonicalize(input), expected);
+  });
+
   test('lone surrogate in object key throws', () => {
     const input = { ['\uD800']: 'value' };
     const expected = { message: 'Lone surrogate is not allowed' };
