@@ -138,6 +138,33 @@ describe('Infinity handling', () => {
   });
 });
 
+describe('Unicode handling', () => {
+  test('lone high surrogate in value throws', () => {
+    const input = { key: '\uD800' };
+    const expected = { message: 'Lone surrogate is not allowed' };
+    assert.throws(() => canonicalize(input), expected);
+  });
+
+  test('lone low surrogate in value throws', () => {
+    const input = { key: '\uDEAD' };
+    const expected = { message: 'Lone surrogate is not allowed' };
+    assert.throws(() => canonicalize(input), expected);
+  });
+
+  test('lone surrogate in object key throws', () => {
+    const input = { ['\uD800']: 'value' };
+    const expected = { message: 'Lone surrogate is not allowed' };
+    assert.throws(() => canonicalize(input), expected);
+  });
+
+  test('valid surrogate pair is allowed', () => {
+    const input = { key: '\uD83D\uDE00' };
+    const actual = canonicalize(input);
+    const expected = '{"key":"😀"}';
+    assert.equal(actual, expected);
+  });
+});
+
 describe('toJSON', () => {
   test('object with toJSON', () => {
     const input = {
