@@ -39,8 +39,24 @@ test('values', () => {
   assert.equal(actual, expected);
 });
 
+test('unicode', () => {
+  const { input, expected } = testdata('unicode');
+  const actual = canonicalize(input);
+  assert.equal(actual, expected);
+});
+
 test('weird', () => {
   const { input, expected } = testdata('weird');
   const actual = canonicalize(input);
   assert.equal(actual, expected);
+});
+
+test('idempotence: canonicalizing canonical output is a fixed point', () => {
+  for (const name of ['arrays', 'french', 'structures', 'unicode', 'values', 'weird']) {
+    const { input } = testdata(name);
+    const once = canonicalize(input);
+    const actual = canonicalize(JSON.parse(once));
+    const expected = once;
+    assert.equal(actual, expected, `not idempotent for ${name}`);
+  }
 });
