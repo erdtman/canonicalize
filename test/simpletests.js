@@ -169,6 +169,18 @@ describe('Unicode handling', () => {
     const expected = '{"key":"😀"}';
     assert.equal(actual, expected);
   });
+
+  test('reversed surrogate pair throws', () => {
+    const input = { key: '\uDC00\uD800' };
+    const expected = { message: 'Lone surrogate is not allowed' };
+    assert.throws(() => canonicalize(input), expected);
+  });
+
+  test('lone surrogate as array element throws', () => {
+    const input = ['\uD800'];
+    const expected = { message: 'Lone surrogate is not allowed' };
+    assert.throws(() => canonicalize(input), expected);
+  });
 });
 
 describe('toJSON', () => {
@@ -233,6 +245,221 @@ describe('circular references', () => {
     const shared = { z: 1 };
     const actual = canonicalize({ x: shared, y: shared });
     const expected = '{"x":{"z":1},"y":{"z":1}}';
+    assert.equal(actual, expected);
+  });
+});
+
+describe('deep nesting', () => {
+  test('deeply nested arrays do not overflow the call stack', () => {
+    const depth = 100000;
+    let input = [];
+    for (let i = 0; i < depth; i++) {
+      input = [input];
+    }
+    const actual = canonicalize(input);
+    const expected = '['.repeat(depth + 1) + ']'.repeat(depth + 1);
+    assert.equal(actual, expected);
+  });
+
+  test('deeply nested objects do not overflow the call stack', () => {
+    const depth = 100000;
+    let input = {};
+    for (let i = 0; i < depth; i++) {
+      input = { a: input };
+    }
+    const actual = canonicalize(input);
+    const expected = '{"a":'.repeat(depth) + '{}' + '}'.repeat(depth);
+    assert.equal(actual, expected);
+  });
+});
+
+describe('values with no JSON representation', () => {
+  test('function-valued property is skipped', () => {
+    const input = { a: () => {}, b: 1 };
+    const actual = canonicalize(input);
+    const expected = '{"b":1}';
+    assert.equal(actual, expected);
+  });
+
+  test('function in array becomes null', () => {
+    const input = [1, () => {}, 2];
+    const actual = canonicalize(input);
+    const expected = '[1,null,2]';
+    assert.equal(actual, expected);
+  });
+
+  test('toJSON returning undefined skips the property', () => {
+    const input = { a: { toJSON: () => undefined }, b: 1 };
+    const actual = canonicalize(input);
+    const expected = '{"b":1}';
+    assert.equal(actual, expected);
+  });
+
+  test('toJSON returning undefined in array becomes null', () => {
+    const input = [1, { toJSON: () => undefined }, 2];
+    const actual = canonicalize(input);
+    const expected = '[1,null,2]';
+    assert.equal(actual, expected);
+  });
+
+  test('top-level function returns undefined', () => {
+    const actual = canonicalize(() => {});
+    const expected = undefined;
+    assert.equal(actual, expected);
+  });
+
+  test('BigInt throws', () => {
+    const input = { a: 1n };
+    assert.throws(() => canonicalize(input), TypeError);
+  });
+});
+
+describe('boxed primitives', () => {
+  test('boxed Number is unwrapped', () => {
+    const input = { a: new Number(5) };
+    const actual = canonicalize(input);
+    const expected = '{"a":5}';
+    assert.equal(actual, expected);
+  });
+
+  test('boxed String is unwrapped', () => {
+    const input = { a: new String('x') };
+    const actual = canonicalize(input);
+    const expected = '{"a":"x"}';
+    assert.equal(actual, expected);
+  });
+
+  test('boxed Boolean is unwrapped', () => {
+    const input = { a: new Boolean(true) };
+    const actual = canonicalize(input);
+    const expected = '{"a":true}';
+    assert.equal(actual, expected);
+  });
+
+  test('boxed NaN throws', () => {
+    const input = { a: new Number(NaN) };
+    const expected = { message: 'NaN is not allowed' };
+    assert.throws(() => canonicalize(input), expected);
+  });
+});
+
+describe('number serialization', () => {
+  const cases = [
+    [1e21, '1e+21'],
+    [1e20, '100000000000000000000'],
+    [1e-7, '1e-7'],
+    [0.000001, '0.000001'],
+    [-0, '0'],
+    [5e-324, '5e-324'],
+    [1.7976931348623157e308, '1.7976931348623157e+308'],
+    [1 / 3, '0.3333333333333333'],
+    // eslint-disable-next-line no-loss-of-precision
+    [333333333.33333329, '333333333.3333333'],
+    [9007199254740991, '9007199254740991']
+  ];
+  for (const [input, expected] of cases) {
+    test(`serializes as ${expected}`, () => {
+      const actual = canonicalize(input);
+      assert.equal(actual, expected);
+    });
+  }
+});
+
+describe('string escaping', () => {
+  test('C0 controls with shorthand escapes use them', () => {
+    const input = '\b\t\n\f\r';
+    const actual = canonicalize(input);
+    const expected = '"\\b\\t\\n\\f\\r"';
+    assert.equal(actual, expected);
+  });
+
+  test('other C0 controls use lowercase u-escapes', () => {
+    const input = String.fromCharCode(0x00, 0x1f);
+    const actual = canonicalize(input);
+    const expected = '"\\u0000\\u001f"';
+    assert.equal(actual, expected);
+  });
+
+  test('DEL and forward slash are not escaped', () => {
+    const input = String.fromCharCode(0x7f) + '/';
+    const actual = canonicalize(input);
+    const expected = '"' + String.fromCharCode(0x7f) + '/"';
+    assert.equal(actual, expected);
+  });
+});
+
+describe('key sorting', () => {
+  test('keys sort by UTF-16 code unit, not code point', () => {
+    // U+FB33 is a higher code unit than the surrogates encoding U+1F600.
+    const input = { '\uFB33': 1, '\u{1F600}': 2 };
+    const actual = canonicalize(input);
+    const expected = '{"\u{1F600}":2,"\uFB33":1}';
+    assert.equal(actual, expected);
+  });
+
+  test('sorting uses unescaped names', () => {
+    const input = { 1: 'one', '\r': 'cr' };
+    const actual = canonicalize(input);
+    const expected = '{"\\r":"cr","1":"one"}';
+    assert.equal(actual, expected);
+  });
+
+  test('insertion order does not affect output', () => {
+    const actual = canonicalize({ b: 1, a: 2 });
+    const expected = canonicalize({ a: 2, b: 1 });
+    assert.equal(actual, expected);
+  });
+});
+
+describe('unusual objects and arrays', () => {
+  test('sparse array holes become null', () => {
+    // eslint-disable-next-line no-sparse-arrays
+    const input = [1, , 3];
+    const actual = canonicalize(input);
+    const expected = '[1,null,3]';
+    assert.equal(actual, expected);
+  });
+
+  test('null-prototype object', () => {
+    const input = Object.assign(Object.create(null), { b: 1, a: 2 });
+    const actual = canonicalize(input);
+    const expected = '{"a":2,"b":1}';
+    assert.equal(actual, expected);
+  });
+
+  test('inherited properties are not serialized', () => {
+    const input = Object.create({ inherited: 1 });
+    input.own = 2;
+    const actual = canonicalize(input);
+    const expected = '{"own":2}';
+    assert.equal(actual, expected);
+  });
+
+  test('non-enumerable properties are not serialized', () => {
+    const input = { visible: 1 };
+    Object.defineProperty(input, 'hidden', { value: 2, enumerable: false });
+    const actual = canonicalize(input);
+    const expected = '{"visible":1}';
+    assert.equal(actual, expected);
+  });
+});
+
+describe('top-level scalars', () => {
+  test('number', () => {
+    const actual = canonicalize(42);
+    const expected = '42';
+    assert.equal(actual, expected);
+  });
+
+  test('string', () => {
+    const actual = canonicalize('hi');
+    const expected = '"hi"';
+    assert.equal(actual, expected);
+  });
+
+  test('boolean', () => {
+    const actual = canonicalize(true);
+    const expected = 'true';
     assert.equal(actual, expected);
   });
 });
