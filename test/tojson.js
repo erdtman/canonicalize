@@ -29,6 +29,20 @@ describe('toJSON', () => {
     assert.throws(() => canonicalize(input), expected);
   });
 
+  test('toJSON resolving to a primitive inside an array', () => {
+    const input = [{ toJSON: () => 1 }, 2];
+    const actual = canonicalize(input);
+    const expected = '[1,2]';
+    assert.equal(actual, expected);
+  });
+
+  test('top-level toJSON resolving to a primitive returns its serialization', () => {
+    const input = { toJSON: () => 42 };
+    const actual = canonicalize(input);
+    const expected = '42';
+    assert.equal(actual, expected);
+  });
+
   test('toJSON returning self throws', () => {
     const input = {};
     input.toJSON = () => input;
