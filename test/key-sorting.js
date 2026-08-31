@@ -33,7 +33,7 @@ describe('key sorting', () => {
     assert.equal(actual, expected);
   });
 
-  test('more than 200 keys uses the Array.sort fallback and stays sorted', () => {
+  test('many scrambled keys stay sorted', () => {
     // 250 keys inserted in scrambled order; i*7 mod 250 is a permutation.
     const keys = [];
     for (let i = 0; i < 250; i++) {
