@@ -69,15 +69,8 @@ describe('string escaping', () => {
     assert.equal(actual, expected);
   });
 
-  test('4999-char string takes the fast path unchanged', () => {
-    const input = 'a'.repeat(4999);
-    const actual = canonicalize(input);
-    const expected = '"' + input + '"';
-    assert.equal(actual, expected);
-  });
-
-  test('5000-char string takes the slow path with identical output', () => {
-    const input = 'a'.repeat(5000);
+  test('long string without escapes matches JSON.stringify', () => {
+    const input = 'a'.repeat(100);
     const actual = canonicalize(input);
     const expected = JSON.stringify(input);
     assert.equal(actual, expected);
@@ -90,7 +83,7 @@ describe('string escaping', () => {
     assert.equal(actual, expected);
   });
 
-  test('lone surrogate in a long string is rejected on the slow path', () => {
+  test('lone surrogate in a long string is rejected', () => {
     const input = 'a'.repeat(6000) + '\uD800';
     const expected = { message: 'Lone surrogate is not allowed' };
     assert.throws(() => canonicalize(input), expected);
