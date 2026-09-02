@@ -49,6 +49,50 @@ echo '{
 # Input from web API
 curl --silent https://pokeapi.co/api/v2/pokemon/pikachu | npx canonicalize > pikachu.json
 ```
+## Best practices for signature schemes
+Here follows an example of how untrusted input can be processed and validated
+before being treated as safe.
+
+A signature covers the canonical form, not the bytes on the wire. Erasing
+differences that carry no meaning — key order, whitespace, `1e2` versus
+`100` — is what canonicalization is for, and a signature ignoring those is
+working as intended. What deserves attention is what JSON.parse discards
+before canonicalize() ever runs: duplicate property names are resolved
+silently, so a malformed document is reduced to a well-formed one and the
+signature vouches for something the sender did not transmit.
+
+```js
+import canonicalize from 'canonicalize';
+
+// The received document is untrusted until validateSignature succeeds
+const untrustedInputText = /* raw document as received */;
+const inputSignature = /* detached signature as received */;
+
+// Duplicate property names are resolved here, last-one-wins, by JSON.parse —
+// before canonicalize() ever sees the data. To reject documents that carried
+// duplicates on the wire, inspect untrustedInputText before this line.
+const untrustedInputObject = JSON.parse(untrustedInputText);
+
+const canonicalText = canonicalize(untrustedInputObject);
+const isValid = validateSignature(canonicalText, inputSignature);
+
+if (isValid) {
+  // canonicalText is the only artifact the signature covers.
+  //
+  // untrustedInputObject is not that artifact. It was derived from
+  // untrustedInputText and was never validated. It is parsable, but it is not
+  // what was signed — do not treat the two as interchangeable.
+  const validatedInput = JSON.parse(canonicalText);
+
+  // From here on, operate on validatedInput.
+}
+```
+
+Forwarding `untrustedInputText` downstream passes on bytes an attacker could
+have altered while verification still succeeded; a consumer that resolves
+duplicate property names first-one-wins will then read a different document
+than the one you validated.
+
 ## Install
 As a library:
 ```
