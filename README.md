@@ -53,15 +53,6 @@ curl --silent https://pokeapi.co/api/v2/pokemon/pikachu | npx canonicalize > pik
 Here follows an example of how untrusted input can be processed and validated
 before being treated as safe.
 
-A signature covers the canonical form, not the bytes on the wire. Erasing
-differences that carry no meaning — key order, whitespace, `1e2` versus
-`100` — is what canonicalization is for, and a signature ignoring those is
-working as intended. What deserves attention is what JSON.parse discards
-before canonicalize() ever runs: duplicate property names are resolved
-silently, so a document that violated the spec becomes indistinguishable from
-one that never did, and a valid signature says nothing about which of the two
-arrived.
-
 ```js
 import canonicalize from 'canonicalize';
 
