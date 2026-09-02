@@ -58,8 +58,9 @@ differences that carry no meaning — key order, whitespace, `1e2` versus
 `100` — is what canonicalization is for, and a signature ignoring those is
 working as intended. What deserves attention is what JSON.parse discards
 before canonicalize() ever runs: duplicate property names are resolved
-silently, so a malformed document is reduced to a well-formed one and the
-signature vouches for something the sender did not transmit.
+silently, so a document that violated the spec becomes indistinguishable from
+one that never did, and a valid signature says nothing about which of the two
+arrived.
 
 ```js
 import canonicalize from 'canonicalize';
