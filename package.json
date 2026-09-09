@@ -22,13 +22,18 @@
   "engines": {
     "node": ">=22"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "test": "node --test test/*.js",
     "coverage": "c8 npm test",
     "coveragehtml": "c8 report -r html",
-    "precoveragehtml": "npm run coverage"
+    "precoveragehtml": "npm run coverage",
+    "prepublishOnly": "npm run lint && npm test"
   },
   "repository": {
     "type": "git",
