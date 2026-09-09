@@ -1,0 +1,57 @@
+name: Publish
+
+on:
+  push:
+    tags: ['v*']
+
+# Never let two tag pushes publish concurrently.
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      # Lets the job mint the OIDC token npm exchanges for a short-lived
+      # publish credential. Without this the publish fails with ENEEDAUTH.
+      id-token: write
+      contents: read
+    steps:
+      # Actions are pinned by commit SHA: this workflow can publish to npm, so
+      # a moved tag on a third-party action would be a supply-chain foothold.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # setup-node must be v7 or newer. Earlier versions write a dummy
+      # `_authToken=${NODE_AUTH_TOKEN}` line into .npmrc; npm then sees auth as
+      # already configured, skips the OIDC exchange, and fails with ENEEDAUTH.
+      # v7.0.0 removed that line (actions/setup-node#1558).
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          # Trusted publishing requires Node >= 22.14.0; 22 resolves well above it.
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      # Node 22 bundles npm 10; trusted publishing requires npm >= 11.5.1.
+      - name: Upgrade npm
+        run: npm install -g npm@latest
+
+      # The tag is what consumers trust. Refuse to publish if it does not name
+      # the version actually being published.
+      - name: Verify tag matches package version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg="$(node -p 'require("./package.json").version')"
+          if [ "$tag" != "$pkg" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match package version $pkg" >&2
+            exit 1
+          fi
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run coverage
+
+      # No --provenance flag and no NODE_AUTH_TOKEN: trusted publishing signs
+      # provenance automatically for public repos, and any token in the
+      # environment would suppress the OIDC exchange.
+      - run: npm publish
