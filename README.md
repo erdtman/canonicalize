@@ -93,6 +93,12 @@ have altered while verification still succeeded; a consumer that resolves
 duplicate property names first-one-wins will then read a different document
 than the one you validated.
 
+## Comparison with other implementations
+[A reproducible comparison of the JavaScript JCS libraries on npm](https://erdtman.github.io/json-canonicalisation-comparison/)
+checks each one against the RFC 8785 test vectors, 10,000 ES6
+number-serialization vectors, and edge cases such as lone surrogates, alongside
+benchmarks, maximum nesting depth, output validity and bundle size.
+
 ## Install
 As a library:
 ```
