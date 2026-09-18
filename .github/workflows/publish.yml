@@ -47,7 +47,9 @@ jobs:
             exit 1
           fi
 
-      - run: npm ci
+      # Not `npm ci`: package-lock.json is gitignored, so it never exists in a
+      # fresh checkout and `npm ci` refuses to run without one.
+      - run: npm install
       - run: npm run lint
       - run: npm run coverage
 
