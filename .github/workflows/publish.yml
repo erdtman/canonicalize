@@ -53,7 +53,12 @@ jobs:
       - run: npm run lint
       - run: npm run coverage
 
+      # Stages rather than publishes: the trusted publisher on npmjs.com does not
+      # grant `npm publish`, so a tag push cannot put a version on the registry on
+      # its own. Promote it with `npm stage approve <stage-id>`, or from the
+      # package page on npmjs.com.
+      #
       # No --provenance flag and no NODE_AUTH_TOKEN: trusted publishing signs
       # provenance automatically for public repos, and any token in the
       # environment would suppress the OIDC exchange.
-      - run: npm publish
+      - run: npm stage publish .
