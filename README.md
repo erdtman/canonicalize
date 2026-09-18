@@ -32,6 +32,14 @@ const json = {
 console.log(canonicalize(json));
 // output: {"":"empty","1":{"\n":56,"f":{"F":5,"f":"hi"}},"10":{},"111":[{"E":"no","e":"yes"}],"A":{},"a":{}}
 ```
+### From CommonJS
+Node 22.12 and later can `require()` an ES module. The module namespace is
+returned as-is, so the function is reached through its `default` property:
+```js
+const canonicalize = require('canonicalize').default;
+console.log(canonicalize({ b: 123, a: 'string' }));
+// output: {"a":"string","b":123}
+```
 ### Via CLI
 The function can be executed directly using npx without explicit installation. This allows JSON files and arbitrary input to be canonicalized with standard input/output:
 ```bash
